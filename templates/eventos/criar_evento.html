@@ -1,0 +1,9 @@
+<h1>Criar Evento</h1>
+<form method="post">
+    {% csrf_token %}
+    <label>Nome do Evento:</label>
+    <input type="text" name="nome" required><br><br>
+    <label>Data:</label>
+    <input type="date" name="data" required><br><br>
+    <button type="submit">Criar Evento</button>
+</form>

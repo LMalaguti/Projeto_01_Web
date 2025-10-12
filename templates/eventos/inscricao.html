@@ -1,0 +1,10 @@
+<h1>Inscrição em Eventos</h1>
+<form method="post">
+    {% csrf_token %}
+    <select name="evento" required>
+        {% for evento in eventos %}
+            <option value="{{ evento.id }}">{{ evento.nome }} - {{ evento.data }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Inscrever-se</button>
+</form>

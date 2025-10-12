@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Menu Principal</title>
+    <style>
+        body { font-family: Arial; text-align: center; background: #f0f2f5; padding-top: 50px; }
+        h1 { color: #333; }
+        .menu { display: flex; flex-direction: column; gap: 15px; margin-top: 30px; align-items: center; }
+        .menu a { text-decoration: none; color: white; background: #007bff; padding: 12px 25px; border-radius: 5px; font-size: 18px; transition: 0.3s; }
+        .menu a:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>Menu Principal</h1>
+    <div class="menu">
+        {% if user.is_authenticated %}
+            <a href="{% url 'eventos:criar' %}">Cadastro de Eventos</a>
+            <a href="{% url 'eventos:inscricao' %}">Inscrição de Usuários</a>
+            <a href="{% url 'certificados:gerar' %}">Emissão de Certificados</a>
+            <a href="{% url 'usuarios:logout' %}">Logout</a>
+        {% else %}
+            <a href="{% url 'usuarios:cadastro' %}">Cadastro de Usuários</a>
+            <a href="{% url 'usuarios:login' %}">Login</a>
+        {% endif %}
+    </div>
+</body>
+</html>

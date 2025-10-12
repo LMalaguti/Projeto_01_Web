@@ -1,0 +1,8 @@
+<h1>Certificados</h1>
+<ul>
+    {% for i in inscricoes %}
+        <li>{{ i.evento.nome }} - {{ i.evento.data }}</li>
+    {% empty %}
+        <li>Você não está inscrito em nenhum evento.</li>
+    {% endfor %}
+</ul>
