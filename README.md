@@ -69,6 +69,6 @@ Este projeto consiste em um sistema web desenvolvido com foco em backend, utiliz
 Este projeto possui finalidade acadêmica e está disponível para uso educacional.
 
 ## Autores: 
-Lucas Malaguti
-Dimitri Ramos
-Felipe Pirangi
+- Lucas Malaguti
+- Dimitri Ramos
+- Felipe Pirangi
