@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Menu Principal</title>
+    <title>Sistema de Gestão de Eventos Acadêmicos</title>
     <style>
         body { font-family: Arial; text-align: center; background: #f0f2f5; padding-top: 50px; }
         h1 { color: #333; }
@@ -12,7 +12,7 @@
     </style>
 </head>
 <body>
-    <h1>Menu Principal</h1>
+    <h1>Sistema de Gestão de Eventos Acadêmicos</h1>
     <div class="menu">
         {% if user.is_authenticated %}
             <a href="{% url 'eventos:criar' %}">Cadastro de Eventos</a>

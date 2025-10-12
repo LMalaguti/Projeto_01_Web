@@ -1,8 +1,17 @@
 <h1>Certificados</h1>
+
 <ul>
     {% for i in inscricoes %}
-        <li>{{ i.evento.nome }} - {{ i.evento.data }}</li>
+        <li>{{ i.evento.titulo }} - {{ i.evento.data_inicio|date:"d/m/Y" }}</li>
     {% empty %}
         <li>Você não está inscrito em nenhum evento.</li>
     {% endfor %}
 </ul>
+
+<!-- Botão para voltar ao menu principal -->
+<div style="margin-top: 20px;">
+    <a href="{% url 'home' %}"
+       style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">
+        Voltar ao Menu Principal
+    </a>
+</div>

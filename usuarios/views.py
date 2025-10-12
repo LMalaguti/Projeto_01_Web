@@ -1,16 +1,16 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login, logout
+from django.contrib.auth.forms import AuthenticationForm
+from .forms import UsuarioForm
 
 def cadastro(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = UsuarioForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('usuarios:login')
     else:
-        form = UserCreationForm()
+        form = UsuarioForm()
     return render(request, 'usuarios/cadastro.html', {'form': form})
 
 def login_view(request):
