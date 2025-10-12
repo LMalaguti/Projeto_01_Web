@@ -3,7 +3,7 @@
     {% csrf_token %}
     <select name="evento" required>
         {% for evento in eventos %}
-            <option value="{{ evento.id }}">{{ evento.nome }} - {{ evento.data }}</option>
+            <option value="{{ evento.id }}">{{ evento.titulo }} - {{ evento.data_inicio }}</option>
         {% endfor %}
     </select>
     <button type="submit">Inscrever-se</button>
