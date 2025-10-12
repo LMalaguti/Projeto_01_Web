@@ -64,14 +64,6 @@ Este projeto consiste em um sistema web desenvolvido com foco em backend, utiliz
 7. Acessar o sistema via navegador:
    http://localhost:8000
 
-## Boas Práticas Adotadas
-
-- Arquitetura MVC com Django
-- Separação entre lógica de negócio e apresentação
-- Uso de migrações para controle do esquema do banco de dados
-- Documentação e comentários explicativos no código
-- Protótipos de interface incluídos para referência visual
-
 ## Licença
 
 Este projeto possui finalidade acadêmica e está disponível para uso educacional.
