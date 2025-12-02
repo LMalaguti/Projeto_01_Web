@@ -1,29 +1,48 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout
-from django.contrib.auth.forms import AuthenticationForm
-from .forms import UsuarioForm
+from rest_framework import generics, permissions
+from .models import User
+from .serializers import UserSerializer, UserRegistrationSerializer
+from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
+from rest_framework import status
+from django.core.mail import send_mail
+from django.conf import settings
+from django.urls import reverse
+from django.core.signing import TimestampSigner
 
-def cadastro(request):
-    if request.method == 'POST':
-        form = UsuarioForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('usuarios:login')
-    else:
-        form = UsuarioForm()
-    return render(request, 'usuarios/cadastro.html', {'form': form})
+signer = TimestampSigner()
 
-def login_view(request):
-    if request.method == 'POST':
-        form = AuthenticationForm(data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            return redirect('home')
-    else:
-        form = AuthenticationForm()
-    return render(request, 'usuarios/login.html', {'form': form})
+class UserRegistrationView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserRegistrationSerializer
+    permission_classes = [permissions.AllowAny]
 
-def logout_view(request):
-    logout(request)
-    return redirect('home')
+    def perform_create(self, serializer):
+        user = serializer.save()
+        # gerar token assinado para confirmação (exemplo simples)
+        token = signer.sign(user.pk)
+        confirm_url = self.request.build_absolute_uri(
+            reverse('users:confirm-registration', args=[token])
+        )
+        # enviar email (configurar EMAIL_BACKEND em settings)
+        subject = 'Confirme seu cadastro - SGEA'
+        message = f'Olá {user.first_name or user.username},\n\nConfirme seu cadastro clicando no link: {confirm_url}'
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=True)
+        # não ativamos aqui: a ativação será via endpoint de confirmação
+
+class ConfirmRegistrationView(generics.GenericAPIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, token):
+        try:
+            unsigned = signer.unsign(token, max_age=60*60*24)  # 1 dia
+            user = User.objects.get(pk=unsigned)
+            user.is_active = True
+            user.save()
+            return Response({'detail':'Conta confirmada.'})
+        except Exception as e:
+            return Response({'detail':'Token inválido ou expirado.'}, status=status.HTTP_400_BAD_REQUEST)
+
+class UserDetailView(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]

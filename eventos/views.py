@@ -1,42 +1,58 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from .models import Evento, Inscricao
+from rest_framework import generics, permissions, status
+from .models import Event, Registration
+from .serializers import EventSerializer, EventCreateSerializer, RegistrationSerializer
+from .throttles import EventListThrottle, RegistrationThrottle
+from rest_framework.response import Response
+from audit.models import AuditLog
 
-@login_required
-def criar_evento(request):
-    if request.method == 'POST':
-        titulo = request.POST.get('titulo')  # campo do modelo
-        data_inicio = request.POST.get('data_inicio')
-        data_fim = request.POST.get('data_fim')
-        horario = request.POST.get('horario')
-        tipo = request.POST.get('tipo')
-        descricao = request.POST.get('descricao')
-        local = request.POST.get('local')
-        quantidade_participantes = request.POST.get('quantidade_participantes')
-        organizador = request.user  # usuário logado
+class EventListView(generics.ListAPIView):
+    queryset = Event.objects.all().order_by('start_date')
+    serializer_class = EventSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    throttle_classes = [EventListThrottle]
 
-        Evento.objects.create(
-            titulo=titulo,
-            data_inicio=data_inicio,
-            data_fim=data_fim,
-            horario=horario,
-            tipo=tipo,
-            descricao=descricao,
-            local=local,
-            quantidade_participantes=quantidade_participantes,
-            organizador=organizador
-        )
-        return redirect('home')
+    def list(self, request, *args, **kwargs):
+        # registrar auditoria
+        AuditLog.objects.create(user=request.user, action='api_event_list', description='Listou eventos via API')
+        return super().list(request, *args, **kwargs)
 
-    return render(request, 'eventos/criar.html')
+class EventCreateView(generics.CreateAPIView):
+    queryset = Event.objects.all()
+    serializer_class = EventCreateSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
+    def perform_create(self, serializer):
+        # validar se organizador é o mesmo ou se o usuário tem permissão
+        user = self.request.user
+        if user.role != 'organizador':
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied('Apenas organizadores podem criar eventos.')
+        serializer.save(organizer=user)
+        AuditLog.objects.create(user=user, action='create_event', description=f'Criou evento {serializer.instance.id}')
 
-@login_required
-def inscricao(request):
-    eventos = Evento.objects.all()
-    if request.method == 'POST':
-        evento_id = request.POST.get('evento')
-        evento = Evento.objects.get(id=evento_id)
-        Inscricao.objects.get_or_create(usuario=request.user, evento=evento)
-        return redirect('home')
-    return render(request, 'eventos/inscricao.html', {'eventos': eventos})
+class EventDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Event.objects.all()
+    serializer_class = EventCreateSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_update(self, serializer):
+        serializer.save()
+        AuditLog.objects.create(user=self.request.user, action='update_event', description=f'Alterou evento {serializer.instance.id}')
+
+    def perform_destroy(self, instance):
+        eid = instance.id
+        instance.delete()
+        AuditLog.objects.create(user=self.request.user, action='delete_event', description=f'Excluiu evento {eid}')
+
+class RegisterForEventView(generics.CreateAPIView):
+    serializer_class = RegistrationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    throttle_classes = [RegistrationThrottle]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        AuditLog.objects.create(user=request.user, action='registration', description=f'Inscreveu-se no evento {serializer.instance.event.id}')
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

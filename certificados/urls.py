@@ -1,8 +1,6 @@
 from django.urls import path
-from . import views
-
-app_name = 'certificados'
+from .views import CertificateListView
 
 urlpatterns = [
-    path('gerar/', views.gerar_certificado, name='gerar'),
+    path('', CertificateListView.as_view(), name='certificate-list'),
 ]

@@ -1,8 +1,20 @@
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from eventos.models import Inscricao
+from rest_framework import generics, permissions
+from .models import Certificate
+from .serializers import CertificateSerializer
+from audit.models import AuditLog
 
-@login_required
-def gerar_certificado(request):
-    inscricoes = Inscricao.objects.filter(usuario=request.user)
-    return render(request, 'certificados/gerar.html', {'inscricoes': inscricoes})
+class CertificateListView(generics.ListAPIView):
+    serializer_class = CertificateSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # alunos e professores veem apenas os próprios certificados
+        user = self.request.user
+        if user.role in ('aluno','professor'):
+            return Certificate.objects.filter(user=user)
+        # organizador pode ver todos
+        return Certificate.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        AuditLog.objects.create(user=request.user, action='issue_certificate', description='Consultou certificados')
+        return super().list(request, *args, **kwargs)

@@ -1,4 +1,10 @@
 from django.contrib import admin
-from .models import Usuario
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from .models import User
 
-admin.site.register(Usuario)
+@admin.register(User)
+class UserAdmin(BaseUserAdmin):
+    fieldsets = BaseUserAdmin.fieldsets + (
+        ('Extra', {'fields': ('phone','institution','role')}),
+    )
+    list_display = ('username','email','role','is_active')
