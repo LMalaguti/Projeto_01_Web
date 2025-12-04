@@ -1,0 +1,65 @@
+[
+    {
+        "model": "usuarios.usuario",
+        "pk": 1,
+        "fields": {
+            "password": "pbkdf2_sha256$870000$test$o9HXU5kkMO+kYkzKg4XlxvOOzrnMKPYnlVBGR9p3Ixs=",
+            "last_login": null,
+            "is_superuser": false,
+            "username": "organizador",
+            "first_name": "Administrador",
+            "last_name": "SGEA",
+            "email": "organizador@sgea.com",
+            "is_staff": true,
+            "is_active": true,
+            "date_joined": "2025-01-01T00:00:00Z",
+            "phone": "(11) 99999-0001",
+            "institution": null,
+            "role": "organizador",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "usuarios.usuario",
+        "pk": 2,
+        "fields": {
+            "password": "pbkdf2_sha256$870000$test$9rR2HxoP+GV1w8Ks4XBn+r4qcZKLqKE8Jl6mXnZV8xY=",
+            "last_login": null,
+            "is_superuser": false,
+            "username": "aluno",
+            "first_name": "Aluno",
+            "last_name": "Teste",
+            "email": "aluno@sgea.com",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2025-01-01T00:00:00Z",
+            "phone": "(11) 99999-0002",
+            "institution": "Universidade Federal",
+            "role": "aluno",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "usuarios.usuario",
+        "pk": 3,
+        "fields": {
+            "password": "pbkdf2_sha256$870000$test$kL8nMpQrS1TuVwXyZaB2C3D4E5F6G7H8I9J0K1L2M3N=",
+            "last_login": null,
+            "is_superuser": false,
+            "username": "professor",
+            "first_name": "Professor",
+            "last_name": "Teste",
+            "email": "professor@sgea.com",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2025-01-01T00:00:00Z",
+            "phone": "(11) 99999-0003",
+            "institution": "Universidade Federal",
+            "role": "professor",
+            "groups": [],
+            "user_permissions": []
+        }
+    }
+]

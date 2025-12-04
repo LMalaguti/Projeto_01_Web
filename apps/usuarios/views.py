@@ -21,7 +21,7 @@ class UserRegistrationView(generics.CreateAPIView):
         # gerar token assinado para confirmação (exemplo simples)
         token = signer.sign(user.pk)
         confirm_url = self.request.build_absolute_uri(
-            reverse('users:confirm-registration', args=[token])
+            reverse('usuarios:confirm-registration', args=[token])
         )
         # enviar email (configurar EMAIL_BACKEND em settings)
         subject = 'Confirme seu cadastro - SGEA'
@@ -46,3 +46,6 @@ class UserDetailView(generics.RetrieveAPIView):
     queryset = Usuario.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user

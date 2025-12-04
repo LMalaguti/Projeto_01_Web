@@ -1,28 +1,109 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Sistema de Gestão de Eventos Acadêmicos</title>
-    <style>
-        body { font-family: Arial; text-align: center; background: #f0f2f5; padding-top: 50px; }
-        h1 { color: #333; }
-        .menu { display: flex; flex-direction: column; gap: 15px; margin-top: 30px; align-items: center; }
-        .menu a { text-decoration: none; color: white; background: #007bff; padding: 12px 25px; border-radius: 5px; font-size: 18px; transition: 0.3s; }
-        .menu a:hover { background: #0056b3; }
-    </style>
-</head>
-<body>
-    <h1>Sistema de Gestão de Eventos Acadêmicos</h1>
-    <div class="menu">
-        {% if user.is_authenticated %}
-            <a href="{% url 'eventos:criar' %}">Cadastro de Eventos</a>
-            <a href="{% url 'eventos:inscricao' %}">Inscrição de Usuários</a>
-            <a href="{% url 'certificados:gerar' %}">Emissão de Certificados</a>
-            <a href="{% url 'usuarios:logout' %}">Logout</a>
-        {% else %}
-            <a href="{% url 'usuarios:cadastro' %}">Cadastro de Usuários</a>
-            <a href="{% url 'usuarios:login' %}">Login</a>
+{% extends 'base.html' %}
+
+{% block title %}Início{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <h1>Sistema de Gestão de Eventos Acadêmicos</h1>
+        <p>Organize, participe e gerencie eventos acadêmicos de forma simples e eficiente. Seminários, palestras,
+            workshops e muito mais!</p>
+        {% if not user.is_authenticated %}
+        <div class="flex-center gap-2">
+            <a href="/api/users/register/" class="btn btn-primary">Criar Conta</a>
+            <a href="/admin/login/" class="btn btn-outline" style="border-color: white; color: white;">Entrar</a>
+        </div>
         {% endif %}
     </div>
-</body>
-</html>
+</section>
+
+<div class="container">
+    {% if user.is_authenticated %}
+    <!-- Menu for authenticated users -->
+    <section class="mt-4">
+        <h2 class="text-center mb-3">O que você deseja fazer?</h2>
+
+        <div class="menu-grid">
+            <!-- Events -->
+            <a href="/api/events/" class="menu-card" style="text-decoration: none; color: inherit;">
+                <div class="menu-card-icon">📅</div>
+                <h3>Ver Eventos</h3>
+                <p>Confira todos os eventos disponíveis e inscreva-se</p>
+            </a>
+
+            {% if user.role == 'organizador' %}
+            <!-- Create Event (Organizer only) -->
+            <a href="/api/events/create/" class="menu-card" style="text-decoration: none; color: inherit;">
+                <div class="menu-card-icon">➕</div>
+                <h3>Criar Evento</h3>
+                <p>Cadastre um novo evento acadêmico</p>
+            </a>
+
+            <!-- Audit Logs (Organizer only) -->
+            <a href="/api/audit/" class="menu-card" style="text-decoration: none; color: inherit;">
+                <div class="menu-card-icon">📋</div>
+                <h3>Logs de Auditoria</h3>
+                <p>Consulte ações realizadas no sistema</p>
+            </a>
+            {% endif %}
+
+            {% if user.role != 'organizador' %}
+            <!-- Register for Event -->
+            <a href="/api/events/register/" class="menu-card" style="text-decoration: none; color: inherit;">
+                <div class="menu-card-icon">✍️</div>
+                <h3>Inscrição em Eventos</h3>
+                <p>Inscreva-se nos eventos disponíveis</p>
+            </a>
+            {% endif %}
+
+            <!-- Certificates -->
+            <a href="/api/certificates/" class="menu-card" style="text-decoration: none; color: inherit;">
+                <div class="menu-card-icon">🎓</div>
+                <h3>Meus Certificados</h3>
+                <p>Visualize e baixe seus certificados de participação</p>
+            </a>
+
+            <!-- Profile -->
+            <a href="/api/users/me/" class="menu-card" style="text-decoration: none; color: inherit;">
+                <div class="menu-card-icon">👤</div>
+                <h3>Meu Perfil</h3>
+                <p>Visualize e edite suas informações</p>
+            </a>
+        </div>
+    </section>
+
+    {% else %}
+    <!-- Info for guests -->
+    <section class="mt-4">
+        <h2 class="text-center mb-3">Recursos do Sistema</h2>
+
+        <div class="menu-grid">
+            <div class="menu-card">
+                <div class="menu-card-icon">📅</div>
+                <h3>Eventos</h3>
+                <p>Seminários, palestras, workshops e cursos acadêmicos</p>
+            </div>
+
+            <div class="menu-card">
+                <div class="menu-card-icon">✍️</div>
+                <h3>Inscrições</h3>
+                <p>Inscreva-se facilmente nos eventos de seu interesse</p>
+            </div>
+
+            <div class="menu-card">
+                <div class="menu-card-icon">🎓</div>
+                <h3>Certificados</h3>
+                <p>Receba certificados de participação automaticamente</p>
+            </div>
+
+            <div class="menu-card">
+                <div class="menu-card-icon">👥</div>
+                <h3>Perfis</h3>
+                <p>Alunos, professores e organizadores</p>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

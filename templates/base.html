@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SGEA - Sistema de Gestão de Eventos Acadêmicos">
+    <title>{% block title %}SGEA{% endblock %} - Sistema de Gestão de Eventos Acadêmicos</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <!-- Skip link for accessibility -->
+    <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+
+    <!-- Header -->
+    <header class="header" role="banner">
+        <div class="container">
+            <a href="{% url 'home' %}" class="logo" aria-label="SGEA - Página inicial">
+                <span class="logo-icon" aria-hidden="true">📚</span>
+                <span>SGEA</span>
+            </a>
+
+            <nav class="nav" role="navigation" aria-label="Navegação principal">
+                {% if user.is_authenticated %}
+                <a href="/api/events/">Eventos</a>
+                {% if user.role == 'organizador' %}
+                <a href="/api/events/create/">Criar Evento</a>
+                <a href="/api/audit/">Auditoria</a>
+                {% endif %}
+                <a href="/api/certificates/">Certificados</a>
+                <a href="/api/users/me/">Meu Perfil</a>
+                <a href="/admin/logout/" class="btn btn-outline">Sair</a>
+                {% else %}
+                <a href="/api/users/register/">Cadastrar</a>
+                <a href="/admin/login/" class="btn btn-primary">Entrar</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="container mt-2">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main id="main-content" class="main-content" role="main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" role="contentinfo">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2025 SGEA - Sistema de Gestão de Eventos Acadêmicos</p>
+                <nav aria-label="Links do rodapé">
+                    <a href="#">Sobre</a> |
+                    <a href="#">Contato</a> |
+                    <a href="#">Política de Privacidade</a>
+                </nav>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>
