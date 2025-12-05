@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+
+{% block title %}Logs de Auditoria{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Logs de Auditoria</h1>
+        <p class="page-subtitle">Registro de ações realizadas no sistema</p>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters card mb-3">
+        <form method="get" class="filter-form">
+            <div class="filter-group">
+                <label>Data</label>
+                <input type="date" name="date" class="form-control" value="{{ selected_date }}">
+            </div>
+            <div class="filter-group">
+                <label>Usuário</label>
+                <select name="user" class="form-control">
+                    <option value="">Todos os usuários</option>
+                    {% for u in users %}
+                    <option value="{{ u.id }}" {% if selected_user==u.id|stringformat:"s" %}selected{% endif %}>
+                        {{ u.first_name }} {{ u.last_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Ação</label>
+                <select name="action" class="form-control">
+                    <option value="">Todas as ações</option>
+                    {% for action in actions %}
+                    <option value="{{ action }}" {% if selected_action==action %}selected{% endif %}>{{ action }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Buscar</label>
+                <input type="text" name="q" class="form-control" placeholder="Descrição..." value="{{ search_query }}">
+            </div>
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-secondary">Filtrar</button>
+                <a href="{% url 'audit:list' %}" class="btn btn-outline">Limpar</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Logs Table -->
+    {% if logs %}
+    <div class="table-container card">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Data/Hora</th>
+                    <th>Usuário</th>
+                    <th>Ação</th>
+                    <th>Descrição</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>
+                        <span class="log-date">{{ log.timestamp|date:"d/m/Y" }}</span>
+                        <span class="log-time">{{ log.timestamp|time:"H:i:s" }}</span>
+                    </td>
+                    <td>
+                        {% if log.user %}
+                        {{ log.user.first_name }} {{ log.user.last_name }}
+                        {% else %}
+                        <span class="text-muted">Sistema</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge badge-action badge-{{ log.action }}">{{ log.action }}</span>
+                    </td>
+                    <td>{{ log.description }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <nav class="pagination-nav">
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline">&laquo; Anterior</a>
+            {% endif %}
+            <span class="page-info">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline">Próxima &raquo;</a>
+            {% endif %}
+        </div>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <h3>Nenhum registro encontrado</h3>
+        <p>Não há logs que correspondam aos filtros selecionados.</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .page-header {
+        margin-bottom: 2rem;
+    }
+
+    .page-subtitle {
+        color: var(--gray-500);
+        margin-bottom: 0;
+    }
+
+    .filters {
+        padding: 1.5rem;
+    }
+
+    .filter-form {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        align-items: flex-end;
+    }
+
+    .filter-group {
+        flex: 1;
+        min-width: 150px;
+    }
+
+    .filter-group label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+        color: var(--gray-600);
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .table-container {
+        padding: 0;
+        overflow-x: auto;
+    }
+
+    .log-date {
+        font-weight: 600;
+    }
+
+    .log-time {
+        color: var(--gray-500);
+        font-size: 0.875rem;
+    }
+
+    .badge-action {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.5rem;
+        background: var(--gray-200);
+        color: var(--gray-700);
+    }
+
+    .badge-create_user {
+        background: var(--success);
+        color: white;
+    }
+
+    .badge-create_event {
+        background: var(--info);
+        color: white;
+    }
+
+    .badge-update_event {
+        background: var(--warning);
+        color: white;
+    }
+
+    .badge-delete_event {
+        background: var(--error);
+        color: white;
+    }
+
+    .badge-registration {
+        background: var(--accent);
+        color: white;
+    }
+
+    .badge-issue_certificate {
+        background: var(--primary);
+        color: white;
+    }
+
+    .text-muted {
+        color: var(--gray-400);
+    }
+
+    .pagination-nav {
+        margin-top: 2rem;
+        display: flex;
+        justify-content: center;
+    }
+
+    .pagination {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .page-info {
+        color: var(--gray-500);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+    .mb-3 {
+        margin-bottom: 1.5rem;
+    }
+</style>
+{% endblock %}

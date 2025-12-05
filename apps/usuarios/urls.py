@@ -1,10 +1,19 @@
 from django.urls import path
-from .views import UserRegistrationView, ConfirmRegistrationView, UserDetailView
+from . import views
 
 app_name = 'usuarios'
 
 urlpatterns = [
-    path('register/', UserRegistrationView.as_view(), name='register'),
-    path('confirm/<str:token>/', ConfirmRegistrationView.as_view(), name='confirm-registration'),
-    path('me/', UserDetailView.as_view(), name='me'),  # pode ser ajustado para usar request.user
+    # Web views
+    path('login/', views.LoginView.as_view(), name='login'),
+    path('logout/', views.LogoutView.as_view(), name='logout'),
+    path('cadastro/', views.RegisterView.as_view(), name='register'),
+    path('cadastro/sucesso/', views.RegisterSuccessView.as_view(), name='register_success'),
+    path('confirmar/<str:token>/', views.ConfirmEmailView.as_view(), name='confirm_email'),
+    path('perfil/', views.ProfileView.as_view(), name='profile'),
+    
+    # API views (for backwards compatibility)
+    path('api/register/', views.UserRegistrationAPIView.as_view(), name='api_register'),
+    path('api/confirm/<str:token>/', views.ConfirmRegistrationAPIView.as_view(), name='api_confirm'),
+    path('api/me/', views.UserDetailAPIView.as_view(), name='api_me'),
 ]

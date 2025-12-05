@@ -1,6 +1,12 @@
 from django.urls import path
-from .views import AuditListView
+from . import views
+
+app_name = 'audit'
 
 urlpatterns = [
-    path('', AuditListView.as_view(), name='audit-list'),
+    # Web views
+    path('', views.AuditLogListView.as_view(), name='list'),
+    
+    # API views
+    path('api/', views.AuditLogListAPIView.as_view(), name='api_list'),
 ]

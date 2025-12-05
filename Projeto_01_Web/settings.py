@@ -48,6 +48,11 @@ INSTALLED_APPS = [
     'apps.audit',
 ]
 
+# Authentication backends - allow login with username or email
+AUTHENTICATION_BACKENDS = [
+    'apps.usuarios.backends.EmailOrUsernameBackend',
+]
+
 
 AUTH_USER_MODEL = 'usuarios.Usuario'
 

@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+
+{% block title %}Meu Perfil{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                {{ user.first_name|slice:":1"|upper }}{{ user.last_name|slice:":1"|upper }}
+            </div>
+            <div class="profile-info">
+                <h1>{{ user.first_name }} {{ user.last_name }}</h1>
+                <span class="badge badge-accent">{{ user.get_role_display }}</span>
+            </div>
+        </div>
+
+        <div class="profile-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Editar Perfil</h2>
+                </div>
+
+                <form method="post" data-validate>
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-error">
+                        {% for error in form.non_field_errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="id_first_name" class="form-label">Nome</label>
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                            <div class="form-error">{{ form.first_name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_last_name" class="form-label">Sobrenome</label>
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                            <div class="form-error">{{ form.last_name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_email" class="form-label">E-mail</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                        <div class="form-error">{{ form.email.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="id_phone" class="form-label">Telefone</label>
+                            {{ form.phone }}
+                            {% if form.phone.errors %}
+                            <div class="form-error">{{ form.phone.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_institution" class="form-label">Instituição</label>
+                            {{ form.institution }}
+                            {% if form.institution.errors %}
+                            <div class="form-error">{{ form.institution.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h2 class="card-title">Informações da Conta</h2>
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Usuário</span>
+                        <span class="info-value">{{ user.username }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Perfil</span>
+                        <span class="info-value">{{ user.get_role_display }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Membro desde</span>
+                        <span class="info-value">{{ user.date_joined|date:"d/m/Y" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Último acesso</span>
+                        <span class="info-value">{{ user.last_login|date:"d/m/Y H:i"|default:"Nunca" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .profile-container {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 2rem 0;
+    }
+
+    .profile-header {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: white;
+    }
+
+    .profile-info h1 {
+        margin-bottom: 0.5rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    @media (max-width: 500px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .profile-header {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+
+    .form-actions {
+        margin-top: 1.5rem;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .info-item {
+        padding: 0.75rem;
+        background: var(--gray-50);
+        border-radius: var(--border-radius);
+    }
+
+    .info-label {
+        display: block;
+        font-size: 0.875rem;
+        color: var(--gray-500);
+        margin-bottom: 0.25rem;
+    }
+
+    .info-value {
+        font-weight: 600;
+        color: var(--gray-800);
+    }
+
+    .mt-3 {
+        margin-top: 1.5rem;
+    }
+</style>
+{% endblock %}

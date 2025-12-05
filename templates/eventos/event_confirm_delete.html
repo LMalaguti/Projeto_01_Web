@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Excluir Evento{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="confirm-container">
+        <div class="card confirm-card">
+            <div class="confirm-icon">⚠️</div>
+            <h1>Excluir Evento</h1>
+            <p class="confirm-message">
+                Tem certeza que deseja excluir o evento <strong>"{{ event.title }}"</strong>?
+            </p>
+            <p class="confirm-warning">
+                Esta ação não pode ser desfeita. Todas as inscrições associadas serão removidas.
+            </p>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="confirm-actions">
+                    <a href="{% url 'eventos:detail' event.pk %}" class="btn btn-outline">Cancelar</a>
+                    <button type="submit" class="btn btn-danger">Excluir Evento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .confirm-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 50vh;
+        padding: 2rem 0;
+    }
+
+    .confirm-card {
+        text-align: center;
+        max-width: 500px;
+        padding: 3rem;
+    }
+
+    .confirm-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+    .confirm-card h1 {
+        color: var(--error);
+        margin-bottom: 1rem;
+    }
+
+    .confirm-message {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .confirm-warning {
+        color: var(--gray-500);
+        margin-bottom: 2rem;
+    }
+
+    .confirm-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+</style>
+{% endblock %}

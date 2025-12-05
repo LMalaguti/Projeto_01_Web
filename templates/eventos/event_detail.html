@@ -1,0 +1,252 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ event.title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <nav class="breadcrumb" aria-label="Navegação">
+        <a href="{% url 'eventos:list' %}">Eventos</a>
+        <span>/</span>
+        <span>{{ event.title|truncatechars:30 }}</span>
+    </nav>
+
+    <div class="event-detail">
+        <div class="event-main">
+            {% if event.banner %}
+            <img src="{{ event.banner.url }}" alt="{{ event.title }}" class="event-banner">
+            {% else %}
+            <div class="event-banner event-banner-placeholder">
+                <span>📅 {{ event.get_event_type_display }}</span>
+            </div>
+            {% endif %}
+
+            <div class="event-content card">
+                <span class="badge badge-primary mb-2">{{ event.get_event_type_display }}</span>
+                <h1>{{ event.title }}</h1>
+
+                <div class="event-description">
+                    {{ event.description|linebreaks }}
+                </div>
+
+                {% if user.is_authenticated and user.role == 'organizador' %}
+                <div class="event-actions mt-3">
+                    <a href="{% url 'eventos:update' event.pk %}" class="btn btn-secondary">Editar</a>
+                    <a href="{% url 'eventos:delete' event.pk %}" class="btn btn-danger">Excluir</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <aside class="event-sidebar">
+            <div class="card">
+                <h3>Informações</h3>
+                <div class="info-list">
+                    <div class="info-item">
+                        <span class="info-icon">📅</span>
+                        <div>
+                            <strong>Data</strong>
+                            <p>{{ event.start_date|date:"d/m/Y" }} a {{ event.end_date|date:"d/m/Y" }}</p>
+                        </div>
+                    </div>
+                    {% if event.start_time %}
+                    <div class="info-item">
+                        <span class="info-icon">🕐</span>
+                        <div>
+                            <strong>Horário</strong>
+                            <p>{{ event.start_time|time:"H:i" }}{% if event.end_time %} às {{ event.end_time|time:"H:i"
+                                }}{% endif %}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="info-item">
+                        <span class="info-icon">📍</span>
+                        <div>
+                            <strong>Local</strong>
+                            <p>{{ event.location }}</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">👥</span>
+                        <div>
+                            <strong>Vagas</strong>
+                            <p class="{% if event.vacancies_left <= 0 %}text-error{% else %}text-success{% endif %}">
+                                {{ event.vacancies_left }} de {{ event.capacity }} disponíveis
+                            </p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">👨‍🏫</span>
+                        <div>
+                            <strong>Professor Responsável</strong>
+                            <p>{{ event.professor_in_charge.first_name }} {{ event.professor_in_charge.last_name }}</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">🎫</span>
+                        <div>
+                            <strong>Organizador</strong>
+                            <p>{{ event.organizer.first_name }} {{ event.organizer.last_name }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enrollment Actions -->
+                <div class="enrollment-section mt-3">
+                    {% if not user.is_authenticated %}
+                    <a href="{% url 'usuarios:login' %}?next={{ request.path }}" class="btn btn-primary btn-block">
+                        Faça login para se inscrever
+                    </a>
+                    {% elif is_enrolled %}
+                    <div class="enrolled-badge">
+                        <span>✓ Você está inscrito</span>
+                    </div>
+                    <form method="post" action="{% url 'eventos:cancel' event.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline btn-block mt-2"
+                            onclick="return confirm('Deseja realmente cancelar sua inscrição?');">
+                            Cancelar Inscrição
+                        </button>
+                    </form>
+                    {% elif can_enroll %}
+                    <form method="post" action="{% url 'eventos:enroll' event.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary btn-block">
+                            Inscrever-se
+                        </button>
+                    </form>
+                    {% elif user.role == 'organizador' %}
+                    <p class="text-muted text-center">Organizadores não podem se inscrever</p>
+                    {% else %}
+                    <button class="btn btn-secondary btn-block" disabled>Evento Esgotado</button>
+                    {% endif %}
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<style>
+    .breadcrumb {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        color: var(--gray-500);
+    }
+
+    .breadcrumb a {
+        color: var(--accent);
+    }
+
+    .event-detail {
+        display: grid;
+        grid-template-columns: 1fr 360px;
+        gap: 2rem;
+    }
+
+    @media (max-width: 900px) {
+        .event-detail {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .event-banner {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        border-radius: var(--border-radius);
+        margin-bottom: 1.5rem;
+    }
+
+    .event-banner-placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        color: white;
+        font-size: 1.5rem;
+    }
+
+    .event-content h1 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .event-description {
+        color: var(--gray-700);
+        line-height: 1.8;
+    }
+
+    .event-sidebar .card {
+        position: sticky;
+        top: 100px;
+    }
+
+    .info-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .info-item {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .info-icon {
+        font-size: 1.25rem;
+    }
+
+    .info-item strong {
+        display: block;
+        font-size: 0.875rem;
+        color: var(--gray-500);
+    }
+
+    .info-item p {
+        margin: 0;
+        font-weight: 500;
+    }
+
+    .enrolled-badge {
+        background: var(--success);
+        color: white;
+        padding: 1rem;
+        border-radius: var(--border-radius);
+        text-align: center;
+        font-weight: 600;
+    }
+
+    .btn-block {
+        width: 100%;
+    }
+
+    .text-success {
+        color: var(--success);
+    }
+
+    .text-error {
+        color: var(--error);
+    }
+
+    .text-muted {
+        color: var(--gray-500);
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .mt-2 {
+        margin-top: 0.75rem;
+    }
+
+    .mt-3 {
+        margin-top: 1.5rem;
+    }
+
+    .mb-2 {
+        margin-bottom: 0.75rem;
+    }
+</style>
+{% endblock %}

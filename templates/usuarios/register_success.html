@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Cadastro Realizado{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="success-container">
+        <div class="card success-card">
+            <div class="success-icon">✉️</div>
+            <h1>Cadastro Realizado!</h1>
+            <p class="success-message">
+                Um e-mail de confirmação foi enviado para o endereço informado.
+            </p>
+            <p class="success-detail">
+                Por favor, verifique sua caixa de entrada e clique no link de confirmação
+                para ativar sua conta. O link expira em 24 horas.
+            </p>
+            <div class="success-tips">
+                <p><strong>Não recebeu o e-mail?</strong></p>
+                <ul>
+                    <li>Verifique a pasta de spam</li>
+                    <li>Aguarde alguns minutos</li>
+                    <li>Certifique-se de que o e-mail está correto</li>
+                </ul>
+            </div>
+            <a href="{% url 'usuarios:login' %}" class="btn btn-primary">Ir para Login</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .success-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 60vh;
+        padding: 2rem 0;
+    }
+
+    .success-card {
+        text-align: center;
+        max-width: 500px;
+        padding: 3rem;
+    }
+
+    .success-icon {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .success-card h1 {
+        color: var(--success);
+        margin-bottom: 1rem;
+    }
+
+    .success-message {
+        font-size: 1.1rem;
+        color: var(--gray-700);
+        margin-bottom: 0.5rem;
+    }
+
+    .success-detail {
+        color: var(--gray-500);
+        margin-bottom: 2rem;
+    }
+
+    .success-tips {
+        background: var(--gray-50);
+        padding: 1.5rem;
+        border-radius: var(--border-radius);
+        text-align: left;
+        margin-bottom: 2rem;
+    }
+
+    .success-tips ul {
+        margin: 0.5rem 0 0 1.5rem;
+        color: var(--gray-600);
+    }
+</style>
+{% endblock %}

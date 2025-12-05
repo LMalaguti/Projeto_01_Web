@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <nav class="breadcrumb">
+        <a href="{% url 'eventos:list' %}">Eventos</a>
+        <span>/</span>
+        <span>{{ title }}</span>
+    </nav>
+
+    <div class="form-container">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title">{{ title }}</h1>
+            </div>
+
+            <form method="post" enctype="multipart/form-data" data-validate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-error">
+                    {% for error in form.non_field_errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="form-group">
+                    <label for="id_title" class="form-label">Título *</label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                    <div class="form-error">{{ form.title.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_description" class="form-label">Descrição</label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                    <div class="form-error">{{ form.description.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_event_type" class="form-label">Tipo de Evento *</label>
+                        {{ form.event_type }}
+                        {% if form.event_type.errors %}
+                        <div class="form-error">{{ form.event_type.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_location" class="form-label">Local *</label>
+                        {{ form.location }}
+                        {% if form.location.errors %}
+                        <div class="form-error">{{ form.location.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_start_date" class="form-label">Data de Início *</label>
+                        {{ form.start_date }}
+                        {% if form.start_date.errors %}
+                        <div class="form-error">{{ form.start_date.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_end_date" class="form-label">Data de Término *</label>
+                        {{ form.end_date }}
+                        {% if form.end_date.errors %}
+                        <div class="form-error">{{ form.end_date.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_start_time" class="form-label">Horário de Início</label>
+                        {{ form.start_time }}
+                        {% if form.start_time.errors %}
+                        <div class="form-error">{{ form.start_time.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_end_time" class="form-label">Horário de Término</label>
+                        {{ form.end_time }}
+                        {% if form.end_time.errors %}
+                        <div class="form-error">{{ form.end_time.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_capacity" class="form-label">Número de Vagas *</label>
+                        {{ form.capacity }}
+                        {% if form.capacity.errors %}
+                        <div class="form-error">{{ form.capacity.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_professor_in_charge" class="form-label">Professor Responsável *</label>
+                        {{ form.professor_in_charge }}
+                        {% if form.professor_in_charge.errors %}
+                        <div class="form-error">{{ form.professor_in_charge.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_banner" class="form-label">Banner do Evento</label>
+                    {{ form.banner }}
+                    {% if form.banner.errors %}
+                    <div class="form-error">{{ form.banner.errors.0 }}</div>
+                    {% endif %}
+                    <div class="form-hint">Imagem no formato JPEG, PNG ou GIF (máx. 5MB)</div>
+                </div>
+
+                <div class="form-actions">
+                    <a href="{% url 'eventos:list' %}" class="btn btn-outline">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">{{ button_text }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-container {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 2rem 0;
+    }
+
+    .breadcrumb {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        color: var(--gray-500);
+    }
+
+    .breadcrumb a {
+        color: var(--accent);
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    @media (max-width: 500px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--gray-200);
+    }
+</style>
+{% endblock %}

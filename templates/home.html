@@ -11,8 +11,9 @@
             workshops e muito mais!</p>
         {% if not user.is_authenticated %}
         <div class="flex-center gap-2">
-            <a href="/api/users/register/" class="btn btn-primary">Criar Conta</a>
-            <a href="/admin/login/" class="btn btn-outline" style="border-color: white; color: white;">Entrar</a>
+            <a href="{% url 'usuarios:register' %}" class="btn btn-primary">Criar Conta</a>
+            <a href="{% url 'usuarios:login' %}" class="btn btn-outline"
+                style="border-color: white; color: white;">Entrar</a>
         </div>
         {% endif %}
     </div>
@@ -26,7 +27,7 @@
 
         <div class="menu-grid">
             <!-- Events -->
-            <a href="/api/events/" class="menu-card" style="text-decoration: none; color: inherit;">
+            <a href="{% url 'eventos:list' %}" class="menu-card" style="text-decoration: none; color: inherit;">
                 <div class="menu-card-icon">📅</div>
                 <h3>Ver Eventos</h3>
                 <p>Confira todos os eventos disponíveis e inscreva-se</p>
@@ -34,14 +35,14 @@
 
             {% if user.role == 'organizador' %}
             <!-- Create Event (Organizer only) -->
-            <a href="/api/events/create/" class="menu-card" style="text-decoration: none; color: inherit;">
+            <a href="{% url 'eventos:create' %}" class="menu-card" style="text-decoration: none; color: inherit;">
                 <div class="menu-card-icon">➕</div>
                 <h3>Criar Evento</h3>
                 <p>Cadastre um novo evento acadêmico</p>
             </a>
 
             <!-- Audit Logs (Organizer only) -->
-            <a href="/api/audit/" class="menu-card" style="text-decoration: none; color: inherit;">
+            <a href="{% url 'audit:list' %}" class="menu-card" style="text-decoration: none; color: inherit;">
                 <div class="menu-card-icon">📋</div>
                 <h3>Logs de Auditoria</h3>
                 <p>Consulte ações realizadas no sistema</p>
@@ -49,23 +50,23 @@
             {% endif %}
 
             {% if user.role != 'organizador' %}
-            <!-- Register for Event -->
-            <a href="/api/events/register/" class="menu-card" style="text-decoration: none; color: inherit;">
+            <!-- My Events -->
+            <a href="{% url 'eventos:my_events' %}" class="menu-card" style="text-decoration: none; color: inherit;">
                 <div class="menu-card-icon">✍️</div>
-                <h3>Inscrição em Eventos</h3>
-                <p>Inscreva-se nos eventos disponíveis</p>
+                <h3>Minhas Inscrições</h3>
+                <p>Veja os eventos em que você está inscrito</p>
             </a>
             {% endif %}
 
             <!-- Certificates -->
-            <a href="/api/certificates/" class="menu-card" style="text-decoration: none; color: inherit;">
+            <a href="{% url 'certificados:list' %}" class="menu-card" style="text-decoration: none; color: inherit;">
                 <div class="menu-card-icon">🎓</div>
                 <h3>Meus Certificados</h3>
                 <p>Visualize e baixe seus certificados de participação</p>
             </a>
 
             <!-- Profile -->
-            <a href="/api/users/me/" class="menu-card" style="text-decoration: none; color: inherit;">
+            <a href="{% url 'usuarios:profile' %}" class="menu-card" style="text-decoration: none; color: inherit;">
                 <div class="menu-card-icon">👤</div>
                 <h3>Meu Perfil</h3>
                 <p>Visualize e edite suas informações</p>

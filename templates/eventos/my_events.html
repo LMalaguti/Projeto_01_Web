@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Minhas Inscrições{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Minhas Inscrições</h1>
+        <p class="page-subtitle">Acompanhe os eventos em que você está inscrito</p>
+    </div>
+
+    {% if registrations %}
+    <div class="registrations-list">
+        {% for registration in registrations %}
+        <article class="registration-card card">
+            <div class="registration-info">
+                <span class="badge badge-primary">{{ registration.event.get_event_type_display }}</span>
+                <h3><a href="{% url 'eventos:detail' registration.event.pk %}">{{ registration.event.title }}</a></h3>
+                <div class="registration-meta">
+                    <span>📅 {{ registration.event.start_date|date:"d/m/Y" }}</span>
+                    <span>📍 {{ registration.event.location }}</span>
+                    <span>📝 Inscrito em {{ registration.registered_at|date:"d/m/Y" }}</span>
+                </div>
+            </div>
+            <div class="registration-actions">
+                {% if registration.presence_confirmed %}
+                <span class="badge badge-success">Presença confirmada</span>
+                {% endif %}
+                <a href="{% url 'eventos:detail' registration.event.pk %}" class="btn btn-outline btn-sm">Ver evento</a>
+                <form method="post" action="{% url 'eventos:cancel' registration.event.pk %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm"
+                        onclick="return confirm('Cancelar inscrição neste evento?');">
+                        Cancelar
+                    </button>
+                </form>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <h3>Nenhuma inscrição</h3>
+        <p>Você ainda não está inscrito em nenhum evento.</p>
+        <a href="{% url 'eventos:list' %}" class="btn btn-primary">Explorar Eventos</a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .page-header {
+        margin-bottom: 2rem;
+    }
+
+    .page-subtitle {
+        color: var(--gray-500);
+        margin-bottom: 0;
+    }
+
+    .registrations-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .registration-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .registration-info h3 {
+        margin: 0.5rem 0;
+    }
+
+    .registration-info h3 a {
+        color: inherit;
+    }
+
+    .registration-info h3 a:hover {
+        color: var(--accent);
+    }
+
+    .registration-meta {
+        display: flex;
+        gap: 1.5rem;
+        color: var(--gray-500);
+        font-size: 0.875rem;
+        flex-wrap: wrap;
+    }
+
+    .registration-actions {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
