@@ -12,6 +12,7 @@ Sistema web para gerenciamento de eventos acadêmicos como seminários, palestra
 - **Gestão de Eventos**: Cadastro, edição e exclusão de eventos acadêmicos
 - **Inscrições**: Sistema de inscrição com controle de vagas
 - **Certificados**: Emissão automática de certificados de participação
+- **Interface Web Completa**: Sistema funcional via navegador
 - **API REST**: Endpoints para integração com outros sistemas
 - **Auditoria**: Registro de ações críticas do sistema
 - **Notificações**: Envio de e-mails de confirmação
@@ -79,43 +80,41 @@ Após executar `python manage.py seed_users`, os seguintes usuários estarão di
 | Aluno | aluno@sgea.com | Aluno@123 | Pode se inscrever em eventos, ver certificados |
 | Professor | professor@sgea.com | Professor@123 | Pode ser responsável por eventos, se inscrever |
 
-### Script de Teste Funcional
+### Testar Interface Web
 
-1. **Testar cadastro de usuário**
-   - Acesse `/api/users/register/`
-   - Cadastre um novo usuário e confirme o e-mail
+| URL | Descrição | Acesso |
+|-----|-----------|--------|
+| `/` | Página inicial | Todos |
+| `/usuarios/login/` | Login | Anônimo |
+| `/usuarios/cadastro/` | Cadastro | Anônimo |
+| `/usuarios/perfil/` | Perfil do usuário | Logado |
+| `/eventos/` | Lista de eventos | Todos |
+| `/eventos/criar/` | Criar evento | Organizador |
+| `/eventos/<id>/` | Detalhes do evento | Todos |
+| `/eventos/minhas-inscricoes/` | Minhas inscrições | Logado |
+| `/certificados/` | Meus certificados | Logado |
+| `/auditoria/` | Logs de auditoria | Organizador |
 
-2. **Testar criação de evento (como Organizador)**
-   - Faça login como `organizador@sgea.com`
-   - Acesse `/api/events/create/`
-   - Cadastre um evento com data futura
+### Testar API REST
 
-3. **Testar inscrição em evento (como Aluno)**
-   - Faça login como `aluno@sgea.com`
-   - Acesse `/api/events/`
-   - Inscreva-se em um evento existente
-
-4. **Testar geração de certificados**
+1. **Obter token de autenticação**
    ```bash
-   # Simula a geração para eventos finalizados
-   python manage.py generate_certificates --dry-run
-   
-   # Gera os certificados
-   python manage.py generate_certificates
+   curl -X POST http://127.0.0.1:8000/api/token/ \
+     -H "Content-Type: application/json" \
+     -d '{"username": "aluno", "password": "Aluno@123"}'
    ```
 
-5. **Testar API REST**
-   - Obtenha um token:
-     ```bash
-     curl -X POST http://127.0.0.1:8000/api/token/ \
-       -H "Content-Type: application/json" \
-       -d '{"username": "aluno", "password": "Aluno@123"}'
-     ```
-   - Use o token para acessar endpoints:
-     ```bash
-     curl http://127.0.0.1:8000/api/events/ \
-       -H "Authorization: Token SEU_TOKEN_AQUI"
-     ```
+2. **Listar eventos**
+   ```bash
+   curl http://127.0.0.1:8000/api/events/ \
+     -H "Authorization: Token SEU_TOKEN_AQUI"
+   ```
+
+3. **Gerar certificados**
+   ```bash
+   python manage.py generate_certificates --dry-run  # Simula
+   python manage.py generate_certificates            # Executa
+   ```
 
 ## 📡 Endpoints da API
 
