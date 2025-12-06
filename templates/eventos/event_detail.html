@@ -53,8 +53,7 @@
                         <span class="info-icon">🕐</span>
                         <div>
                             <strong>Horário</strong>
-                            <p>{{ event.start_time|time:"H:i" }}{% if event.end_time %} às {{ event.end_time|time:"H:i"
-                                }}{% endif %}</p>
+                            <p>{{ event.start_time|time:"H:i" }}{% if event.end_time %} às {{ event.end_time|time:"H:i" }}{% endif %}</p>
                         </div>
                     </div>
                     {% endif %}
@@ -78,14 +77,14 @@
                         <span class="info-icon">👨‍🏫</span>
                         <div>
                             <strong>Professor Responsável</strong>
-                            <p>{{ event.professor_in_charge.first_name }} {{ event.professor_in_charge.last_name }}</p>
+                            <p>{% if event.professor_in_charge.get_full_name %}{{ event.professor_in_charge.get_full_name }}{% else %}{{ event.professor_in_charge.username }}{% endif %}</p>
                         </div>
                     </div>
                     <div class="info-item">
                         <span class="info-icon">🎫</span>
                         <div>
                             <strong>Organizador</strong>
-                            <p>{{ event.organizer.first_name }} {{ event.organizer.last_name }}</p>
+                            <p>{% if event.organizer.get_full_name %}{{ event.organizer.get_full_name }}{% else %}{{ event.organizer.username }}{% endif %}</p>
                         </div>
                     </div>
                 </div>
