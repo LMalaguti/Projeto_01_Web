@@ -59,12 +59,17 @@ Sistema web para gerenciamento de eventos acadêmicos como seminários, palestra
    python manage.py seed_users
    ```
 
-6. **Inicie o servidor de desenvolvimento**
+6. **Crie um superusuário para o admin (opcional)**
+   ```bash
+   python manage.py createsuperuser
+   ```
+
+7. **Inicie o servidor de desenvolvimento**
    ```bash
    python manage.py runserver
    ```
 
-7. **Acesse o sistema**
+8. **Acesse o sistema**
    - URL: http://127.0.0.1:8000/
    - Admin: http://127.0.0.1:8000/admin/
 
