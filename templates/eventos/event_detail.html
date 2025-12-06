@@ -32,6 +32,15 @@
                 <div class="event-actions mt-3">
                     <a href="{% url 'eventos:update' event.pk %}" class="btn btn-secondary">Editar</a>
                     <a href="{% url 'eventos:delete' event.pk %}" class="btn btn-danger">Excluir</a>
+
+                    <form method="post" action="{% url 'eventos:demo_end' event.pk %}"
+                        style="display: inline-block; margin-left: 10px;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary"
+                            onclick="return confirm('DEMO: Isso vai finalizar o evento, confirmar presenças e gerar certificados. Continuar?');">
+                            🚀 Demo: Gerar Certificados
+                        </button>
+                    </form>
                 </div>
                 {% endif %}
             </div>
@@ -53,7 +62,8 @@
                         <span class="info-icon">🕐</span>
                         <div>
                             <strong>Horário</strong>
-                            <p>{{ event.start_time|time:"H:i" }}{% if event.end_time %} às {{ event.end_time|time:"H:i" }}{% endif %}</p>
+                            <p>{{ event.start_time|time:"H:i" }}{% if event.end_time %} às {{ event.end_time|time:"H:i"
+                                }}{% endif %}</p>
                         </div>
                     </div>
                     {% endif %}
@@ -77,14 +87,17 @@
                         <span class="info-icon">👨‍🏫</span>
                         <div>
                             <strong>Professor Responsável</strong>
-                            <p>{% if event.professor_in_charge.get_full_name %}{{ event.professor_in_charge.get_full_name }}{% else %}{{ event.professor_in_charge.username }}{% endif %}</p>
+                            <p>{% if event.professor_in_charge.get_full_name %}{{
+                                event.professor_in_charge.get_full_name }}{% else %}{{
+                                event.professor_in_charge.username }}{% endif %}</p>
                         </div>
                     </div>
                     <div class="info-item">
                         <span class="info-icon">🎫</span>
                         <div>
                             <strong>Organizador</strong>
-                            <p>{% if event.organizer.get_full_name %}{{ event.organizer.get_full_name }}{% else %}{{ event.organizer.username }}{% endif %}</p>
+                            <p>{% if event.organizer.get_full_name %}{{ event.organizer.get_full_name }}{% else %}{{
+                                event.organizer.username }}{% endif %}</p>
                         </div>
                     </div>
                 </div>

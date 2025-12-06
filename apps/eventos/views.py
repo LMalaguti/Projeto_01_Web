@@ -212,6 +212,84 @@ class MyEventsView(LoginRequiredMixin, ListView):
         ).select_related('event').order_by('-registered_at')
 
 
+class DemoEndEventView(LoginRequiredMixin, OrganizerRequiredMixin, View):
+    """
+    Demo view: Ends an event, confirms all registrations, and generates certificates.
+    This is for presentation/demo purposes only.
+    """
+    def post(self, request, pk):
+        from datetime import date, timedelta
+        from django.utils import timezone
+        from django.core.files.base import ContentFile
+        from apps.certificados.models import Certificado
+        
+        event = get_object_or_404(Event, pk=pk)
+        
+        # Step 1: End the event (set end_date to yesterday)
+        event.end_date = date.today() - timedelta(days=1)
+        if event.start_date > event.end_date:
+            event.start_date = event.end_date
+        event.save()
+        
+        # Step 2: Confirm presence for all registrations
+        registrations = Registration.objects.filter(event=event)
+        confirmed_count = registrations.update(presence_confirmed=True)
+        
+        # Step 3: Generate certificates for all confirmed participants
+        certificates_created = 0
+        for registration in registrations.select_related('user'):
+            user = registration.user
+            
+            # Skip if certificate already exists
+            if Certificado.objects.filter(user=user, event=event).exists():
+                continue
+            
+            # Generate certificate
+            certificate_content = f"""
+================================================================================
+                    CERTIFICADO DE PARTICIPAÇÃO
+================================================================================
+
+Certificamos que
+
+                        {user.get_full_name() or user.username}
+
+participou do evento
+
+                        {event.title}
+
+Tipo: {event.get_event_type_display()}
+Data: {event.start_date.strftime('%d/%m/%Y')} a {event.end_date.strftime('%d/%m/%Y')}
+Local: {event.location}
+
+Professor Responsável: {event.professor_in_charge.get_full_name() or event.professor_in_charge.username}
+Organizador: {event.organizer.get_full_name() or event.organizer.username}
+
+================================================================================
+            SGEA - Sistema de Gestão de Eventos Acadêmicos
+                    Emitido em: {timezone.localdate().strftime('%d/%m/%Y')}
+================================================================================
+"""
+            certificate = Certificado(user=user, event=event)
+            filename = f'certificado_{event.id}_{user.id}.txt'
+            certificate.file.save(filename, ContentFile(certificate_content.encode('utf-8')))
+            certificate.save()
+            certificates_created += 1
+        
+        # Log the demo action
+        AuditLog.objects.create(
+            user=request.user,
+            action='demo_end_event',
+            description=f'[DEMO] Finalizou evento "{event.title}", confirmou {confirmed_count} presenças, gerou {certificates_created} certificados'
+        )
+        
+        messages.success(
+            request, 
+            f'✅ Demo: Evento finalizado! {confirmed_count} presenças confirmadas, {certificates_created} certificados gerados.'
+        )
+        return redirect('eventos:detail', pk=pk)
+
+
 # API Views for backwards compatibility
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response

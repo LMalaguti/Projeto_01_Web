@@ -12,6 +12,7 @@ urlpatterns = [
     path('<int:pk>/excluir/', views.EventDeleteView.as_view(), name='delete'),
     path('<int:pk>/inscrever/', views.EnrollView.as_view(), name='enroll'),
     path('<int:pk>/cancelar/', views.CancelEnrollmentView.as_view(), name='cancel'),
+    path('<int:pk>/demo-finalizar/', views.DemoEndEventView.as_view(), name='demo_end'),
     path('minhas-inscricoes/', views.MyEventsView.as_view(), name='my_events'),
     
     # API views
