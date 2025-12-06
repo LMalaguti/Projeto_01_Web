@@ -87,17 +87,14 @@
                         <span class="info-icon">👨‍🏫</span>
                         <div>
                             <strong>Professor Responsável</strong>
-                            <p>{% if event.professor_in_charge.get_full_name %}{{
-                                event.professor_in_charge.get_full_name }}{% else %}{{
-                                event.professor_in_charge.username }}{% endif %}</p>
+                            <p>{{ event.professor_in_charge.get_full_name|default:event.professor_in_charge.username }}</p>
                         </div>
                     </div>
                     <div class="info-item">
                         <span class="info-icon">🎫</span>
                         <div>
                             <strong>Organizador</strong>
-                            <p>{% if event.organizer.get_full_name %}{{ event.organizer.get_full_name }}{% else %}{{
-                                event.organizer.username }}{% endif %}</p>
+                            <p>{{ event.organizer.get_full_name|default:event.organizer.username }}</p>
                         </div>
                     </div>
                 </div>
