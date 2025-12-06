@@ -10,13 +10,74 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        # Use raw SQL to drop old tables if they exist
-        migrations.RunSQL(
-            sql="DROP TABLE IF EXISTS eventos_inscricao;",
-            reverse_sql=migrations.RunSQL.noop,
+        # First, remove the fields that reference Evento (to break the FK constraint)
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.RemoveField(
+                    model_name='inscricao',
+                    name='evento',
+                ),
+            ],
+            database_operations=[
+                # No database operation needed - table will be dropped
+            ],
         ),
-        migrations.RunSQL(
-            sql="DROP TABLE IF EXISTS eventos_evento;",
-            reverse_sql=migrations.RunSQL.noop,
+        # Remove unique_together constraint from Inscricao
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterUniqueTogether(
+                    name='inscricao',
+                    unique_together=set(),
+                ),
+            ],
+            database_operations=[],
+        ),
+        # Remove the usuario field from Inscricao
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.RemoveField(
+                    model_name='inscricao',
+                    name='usuario',
+                ),
+            ],
+            database_operations=[],
+        ),
+        # Remove the organizador field from Evento
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.RemoveField(
+                    model_name='evento',
+                    name='organizador',
+                ),
+            ],
+            database_operations=[],
+        ),
+        # Delete the old Inscricao model (state only, table dropped via SQL)
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.DeleteModel(
+                    name='Inscricao',
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql="DROP TABLE IF EXISTS eventos_inscricao;",
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
+        ),
+        # Delete the old Evento model (state only, table dropped via SQL)
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.DeleteModel(
+                    name='Evento',
+                ),
+            ],
+            database_operations=[
+                migrations.RunSQL(
+                    sql="DROP TABLE IF EXISTS eventos_evento;",
+                    reverse_sql=migrations.RunSQL.noop,
+                ),
+            ],
         ),
     ]
