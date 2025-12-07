@@ -15,7 +15,7 @@ Sistema web para gerenciamento de eventos acadêmicos como seminários, palestra
 - **Interface Web Completa**: Sistema funcional via navegador
 - **API REST**: Endpoints para integração com outros sistemas
 - **Auditoria**: Registro de ações críticas do sistema
-- **Notificações**: Envio de e-mails de confirmação
+- **Email de Confirmação**: Email HTML estilizado com logo, saudação personalizada e link de ativação
 
 ## 🚀 Guia de Instalação
 
@@ -115,12 +115,6 @@ Após executar `python manage.py seed_users`, os seguintes usuários estarão di
      -H "Authorization: Token SEU_TOKEN_AQUI"
    ```
 
-3. **Gerar certificados**
-   ```bash
-   python manage.py generate_certificates --dry-run  # Simula
-   python manage.py generate_certificates            # Executa
-   ```
-
 ## 📡 Endpoints da API
 
 | Método | Endpoint | Descrição | Limite |
@@ -145,9 +139,22 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'seu-email@exemplo.com'
 EMAIL_HOST_PASSWORD = 'sua-senha-de-app'
+DEFAULT_FROM_EMAIL = 'SGEA <seu-email@exemplo.com>'
 ```
 
 **Dica para Gmail**: Use uma [senha de app](https://support.google.com/accounts/answer/185833).
+
+### 📧 Email de Confirmação de Cadastro
+
+Ao criar uma conta, o usuário recebe um email HTML estilizado contendo:
+
+- **Logo do SGEA** - identidade visual do sistema
+- **Saudação personalizada** - com o nome do usuário
+- **Mensagem de boas-vindas** - texto acolhedor
+- **Botão de confirmação** - link estilizado para ativar a conta
+- **Prazo de expiração** - o link expira em 24 horas
+
+Novos usuários só podem acessar o sistema após confirmar o email.
 
 ## 📁 Estrutura do Projeto
 

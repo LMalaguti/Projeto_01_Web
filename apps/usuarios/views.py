@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, logout
@@ -6,6 +7,7 @@ from django.contrib.auth.views import LoginView as BaseLoginView
 from django.core.mail import send_mail
 from django.core.signing import TimestampSigner, BadSignature, SignatureExpired
 from django.shortcuts import redirect, get_object_or_404
+from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, UpdateView, TemplateView
@@ -62,13 +64,23 @@ class RegisterView(CreateView):
             reverse('usuarios:confirm_email', args=[token])
         )
         
-        # Send confirmation email
-        subject = 'Confirme seu cadastro - SGEA'
-        message = f'''Olá {user.first_name or user.username},
+        # Build logo URL (for email clients that support images)
+        logo_url = self.request.build_absolute_uri('/static/images/logo.png')
+        
+        # Render HTML email template
+        html_message = render_to_string('emails/email_confirmation.html', {
+            'user_name': user.first_name or user.username,
+            'confirm_url': confirm_url,
+            'logo_url': logo_url,
+            'year': datetime.now().year,
+        })
+        
+        # Plain text fallback
+        text_message = f'''Olá {user.first_name or user.username},
 
-Obrigado por se cadastrar no SGEA - Sistema de Gestão de Eventos Acadêmicos!
+Bem-vindo(a) ao SGEA - Sistema de Gestão de Eventos Acadêmicos!
 
-Para ativar sua conta, clique no link abaixo:
+Para ativar sua conta, acesse o link abaixo:
 {confirm_url}
 
 Este link expira em 24 horas.
@@ -78,8 +90,18 @@ Se você não solicitou este cadastro, ignore este e-mail.
 Atenciosamente,
 Equipe SGEA
 '''
+        
+        # Send confirmation email
+        subject = '✉️ Confirme seu cadastro - SGEA'
         try:
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=False)
+            send_mail(
+                subject=subject,
+                message=text_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                html_message=html_message,
+                fail_silently=False
+            )
         except Exception as e:
             # Log error but don't fail registration
             print(f"Email error: {e}")
@@ -161,9 +183,27 @@ class UserRegistrationAPIView(generics.CreateAPIView):
         confirm_url = self.request.build_absolute_uri(
             reverse('usuarios:confirm_email', args=[token])
         )
-        subject = 'Confirme seu cadastro - SGEA'
-        message = f'Olá {user.first_name or user.username},\n\nConfirme seu cadastro clicando no link: {confirm_url}'
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=True)
+        logo_url = self.request.build_absolute_uri('/static/images/logo.png')
+        
+        # Render HTML email
+        html_message = render_to_string('emails/email_confirmation.html', {
+            'user_name': user.first_name or user.username,
+            'confirm_url': confirm_url,
+            'logo_url': logo_url,
+            'year': datetime.now().year,
+        })
+        
+        subject = '✉️ Confirme seu cadastro - SGEA'
+        text_message = f'Olá {user.first_name or user.username},\n\nConfirme seu cadastro acessando: {confirm_url}'
+        
+        send_mail(
+            subject=subject,
+            message=text_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            html_message=html_message,
+            fail_silently=True
+        )
 
 
 class ConfirmRegistrationAPIView(generics.GenericAPIView):
