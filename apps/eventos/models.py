@@ -30,6 +30,9 @@ class Event(models.Model):
             raise ValidationError('Data de início não pode ser anterior à data atual.')
         if self.end_date < self.start_date:
             raise ValidationError('Data final não pode ser anterior à data inicial.')
+        if self.start_date == self.end_date and self.start_time and self.end_time:
+            if self.end_time < self.start_time:
+                raise ValidationError('Horário de término não pode ser anterior ao horário de início.')
         # garantir professor
         if not self.professor_in_charge:
             raise ValidationError('Evento deve ter um professor responsável.')

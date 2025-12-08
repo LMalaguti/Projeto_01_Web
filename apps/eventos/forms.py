@@ -89,6 +89,13 @@ class EventForm(forms.ModelForm):
         
         if start_date and end_date and end_date < start_date:
             self.add_error('end_date', 'A data de término não pode ser anterior à data de início.')
+
+        start_time = cleaned_data.get('start_time')
+        end_time = cleaned_data.get('end_time')
+
+        if start_date and end_date and start_date == end_date and start_time and end_time:
+            if end_time < start_time:
+                self.add_error('end_time', 'O horário de término não pode ser anterior ao horário de início.')
         
         # Validate banner is an image
         banner = cleaned_data.get('banner')
